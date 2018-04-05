@@ -50,7 +50,6 @@ This option will take some time to provision, as it needs to provision a VM scal
 
 ![](Images/SFProvison7.png)
 
-
 ## Secure Connectivity
 
 The cluster uses a single self-signed certificate for client to node security (also for node to node communication). The certificate generated during the provision cluster must be installed in the ```CurrentUser\My``` certificate store.
@@ -87,7 +86,7 @@ Service Fabric Explorer is a web-based tool for inspecting and managing applicat
 
 - To reach Service Fabric Explorer, navigate to the Service Fabric connection endpoint - in the above example it would be  <https://marksf.westeurope.cloudapp.azure.com:19080/Explorer> - amend appropriately based on the name given to your cluster
 - Accept the warning (browser is not aware of the self signed certificates), and continue to the webpage.
-- Specify the certificate that was downloaded / installed. 
+- Specify the certificate that was downloaded / installed.
 
 ![](Images/SFExplorerCert.png)
 
@@ -162,7 +161,7 @@ If using a private container registry, then will need to specify the respository
 
 - In the Visual Studio Solution Explorer, right click on project name and select Publish
 - Specify the Service Fabric connection endpoint - this will be on port 19000
-- Specify the certificate details 
+- Specify the certificate details
 - Select Publish
 
 ![](Images/SFVSPublish.png)
@@ -218,7 +217,6 @@ As before, publish the application from within Visual Studio.
 In the Servic Fabric Explorer, we can see the state of the upgrade being rolled out across the cluster nodes.  The web app remains available whilst the upgrade is being deployed.
 
 ![](Images/SFRollingUpdate.png)
-
 
 We can now access our updated web application
 
