@@ -1,6 +1,6 @@
 # Service Fabric - Hands-on Lab Script
 
-Mark Harrison : 1 Dec 2017
+Mark Harrison : 1 Dec 2017, updated 5 April 2018
 
 ![](Images/SF.png)
 
