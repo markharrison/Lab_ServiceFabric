@@ -1,12 +1,14 @@
 # Service Fabric (Containers) - Hands-on Lab Script
 
-Mark Harrison : 1 Dec 2017
+Mark Harrison : 1 Dec 2017, updated 5 April 2018
 
 ![](Images/SF.png)
 
 ## Overview
 
 Service Fabric is a distributed systems platform that makes it easy to package, deploy, and manage scalable and reliable microservices and containers. Developers and administrators can avoid complex infrastructure problems and focus on implementing mission-critical, demanding workloads that are scalable, reliable, and manageable.
+
+In this Lab, we will deploy  a Web App to Service Fabric using a Docker container.
 
 ## Create SF cluster
 
@@ -34,17 +36,60 @@ Alternatively, create a Service Fabric cluster in Azure using the Azure Manageme
 
 This option will take some time to provision, as it needs to provision a VM scale set with 5 nodes.  The advantage over party clusters is it will not disappear after one hour.
 
-![](Images/SFAzure.png)
+![](Images/SFProvison1.png)
 
-![](Images/SFAzure2.png)
+![](Images/SFProvison2.png)
 
-![](Images/SFAzure3.png)
+![](Images/SFProvison3.png)
+
+![](Images/SFProvison4.png)
+
+![](Images/SFProvison5.png)
+
+![](Images/SFProvison6.png)
+
+![](Images/SFProvison7.png)
+
+
+## Secure Connectivity
+
+The cluster uses a single self-signed certificate for client to node security (also for node to node communication). The certificate generated during the provision cluster must be installed in the ```CurrentUser\My``` certificate store.
+
+For Option 1 (the Party Cluster) - there is a link giving the PowerShell required to install the certificate.
+
+For Option 2, as part of the provisioing screens there is a link to download the certificate.  This can be installed with the following PowerShell (amend filename appropriately) or via the MMC console app.
+
+```powershell
+$pswd = "1234"
+$pfxfilepath = "C:\Users\mharriso\Desktop\markharrisonkv-MarkHarrisonCert-20180404.pfx"
+
+Import-PfxCertificate -Exportable -CertStoreLocation Cert:\LocalMachine\My `
+ -FilePath $PfxFilePath -Password (ConvertTo-SecureString -String $pswd -AsPlainText -Force)
+```
+
+![](Images/SFCert.png)
+
+Take note of the certificate thumbprint - this will be needed when publishing from Visual Studio.
+
+![](Images/SFCert1.png)
+
+![](Images/SFCert2.png)
+
+![](Images/SFCert3.png)
+
+![](Images/SFCert4.png)
+
+![](Images/SFCert5.png)
 
 ## SF Explorer
 
 Service Fabric Explorer is a web-based tool for inspecting and managing applications and nodes in an Azure Service Fabric cluster.
 
-- To reach Service Fabric Explorer for a given cluster, navigate to <http://cluster-endpoint:19080/Explorer>
+- To reach Service Fabric Explorer, navigate to the Service Fabric connection endpoint - in the above example it would be  <https://marksf.westeurope.cloudapp.azure.com:19080/Explorer> - amend appropriately based on the name given to your cluster
+- Accept the warning (browser is not aware of the self signed certificates), and continue to the webpage.
+- Specify the certificate that was downloaded / installed. 
+
+![](Images/SFExplorerCert.png)
 
 ![](Images/SFExplorer.png)
 
@@ -104,19 +149,43 @@ Notice that the container image is specified in ServiceFabric.xml
     </Policies>
 ```
 
+If using a private container registry, then will need to specify the respository credentials.
+
+```xml
+      <ContainerHostPolicies CodePackageRef="Code" >
+        <RepositoryCredentials AccountName="markharrison" Password="password" PasswordEncrypted="false"/>
+
+      </ContainerHostPolicies>
+```
+
 ## Deployment
 
 - In the Visual Studio Solution Explorer, right click on project name and select Publish
 - Specify the Service Fabric connection endpoint - this will be on port 19000
+- Specify the certificate details 
 - Select Publish
 
 ![](Images/SFVSPublish.png)
+
+The certificate details are stored in ```cloud.xml```
+
+```xml
+  <ClusterConnectionParameters ConnectionEndpoint="marksf.westeurope.cloudapp.azure.com:19000"
+                             X509Credential="true"
+                             ServerCertThumbprint="024b89a2d21c63a7b583c89fb0b7590692efce21"
+                             FindType="FindByThumbprint"
+                             FindValue="024b89a2d21c63a7b583c89fb0b7590692efce21"
+                             StoreLocation="CurrentUser"
+                             StoreName="My" />
+```
 
 ![](Images/SFVSPublish2.png)
 
 The Service Fabric Explorer will show that 1 Application has been deployed
 
 ![](Images/SFExplorerApp.png)
+
+![](Images/SFExplorerAppLogs.png)
 
 We can now access our web application
 
