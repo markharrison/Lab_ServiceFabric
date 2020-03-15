@@ -38,8 +38,6 @@ The version of Windows Operating system selected must match the version of the O
 
 ![](Images/SFProvision10.png)
 
-
-
 ## Secure Connectivity
 
 The cluster uses a single self-signed certificate for client to node security (also for node to node communication). The certificate generated during the provision cluster must be installed in the ```CurrentUser\My``` certificate store.
