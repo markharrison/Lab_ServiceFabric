@@ -1,6 +1,6 @@
 # Service Fabric (Containers) - Hands-on Lab Script
 
-Mark Harrison : 1 Dec 2017, updated 5 April 2018
+Mark Harrison : checked & updated 15 March 2020 - original 5 April 2018
 
 ![](Images/SF.png)
 
@@ -12,29 +12,11 @@ In this Lab, we will deploy  a Web App to Service Fabric using a Docker containe
 
 ## Create SF cluster
 
-### Option 1
+Create a Service Fabric cluster in Azure using the Azure Management portal.
 
-Party clusters are free, limited-time Service Fabric clusters hosted on Azure and run by the Service Fabric team where anyone can deploy applications and learn about the platform.
+This option will take some time to provision, as it needs to provision a VM scale set with 5 nodes.  
 
-A party cluster will only last for one hour - but it will be immediately available.
-
-- Access the following URL
-
-<http://aka.ms/tryservicefabric>
-
-- Logon with GitHub or Facebook
-
-![](Images/SFPartyCluster.png)
-
-- Select the option to Join a Windows Cluster
-
-![](Images/SFPartyCluster2.png)
-
-### Option2
-
-Alternatively, create a Service Fabric cluster in Azure using the Azure Management portal.
-
-This option will take some time to provision, as it needs to provision a VM scale set with 5 nodes.  The advantage over party clusters is it will not disappear after one hour.
+The version of Windows Operating system selected must match the version of the OS that the containers are built against.  To use the containers suggested in this lab - you must select 1709.
 
 ![](Images/SFProvison1.png)
 
@@ -50,19 +32,33 @@ This option will take some time to provision, as it needs to provision a VM scal
 
 ![](Images/SFProvison7.png)
 
+![](Images/SFProvison8.png)
+
+![](Images/SFProvision9.png)
+
+![](Images/SFProvision10.png)
+
+
+
 ## Secure Connectivity
 
 The cluster uses a single self-signed certificate for client to node security (also for node to node communication). The certificate generated during the provision cluster must be installed in the ```CurrentUser\My``` certificate store.
 
-For Option 1 (the Party Cluster) - there is a link giving the PowerShell required to install the certificate.
+As part of the provisioning screens there is a link to download the certificate. alternatively, it can be downloaded from the KeyVault.
 
-For Option 2, as part of the provisioing screens there is a link to download the certificate.  This can be installed with the following PowerShell (amend filename appropriately) or via the MMC console app.
+![](Images/SFKeyVault1.png)
+
+![](Images/SFKeyVault2.png)
+
+![](Images/SFKeyVault3.png)
+
+ This can be installed with the following PowerShell (amend filename appropriately) or via the MMC console app.
 
 ```powershell
 $pswd = "1234"
-$pfxfilepath = "C:\Users\mharriso\Desktop\markharrisonkv-MarkHarrisonCert-20180404.pfx"
+$pfxfilepath = "C:\Users\mharriso\Desktop\markharrisonkv-MarkHarrisonCert-20200315.pfx"
 
-Import-PfxCertificate -Exportable -CertStoreLocation Cert:\LocalMachine\My `
+Import-PfxCertificate -Exportable -CertStoreLocation Cert:\CurrentUser\My `
  -FilePath $PfxFilePath -Password (ConvertTo-SecureString -String $pswd -AsPlainText -Force)
 ```
 
@@ -84,8 +80,9 @@ Take note of the certificate thumbprint - this will be needed when publishing fr
 
 Service Fabric Explorer is a web-based tool for inspecting and managing applications and nodes in an Azure Service Fabric cluster.
 
-- To reach Service Fabric Explorer, navigate to the Service Fabric connection endpoint - in the above example it would be  <https://marksf.westeurope.cloudapp.azure.com:19080/Explorer> - amend appropriately based on the name given to your cluster
-- Accept the warning (browser is not aware of the self signed certificates), and continue to the webpage.
+- To reach Service Fabric Explorer, navigate to the Service Fabric connection endpoint - this is displayed in the Service Fabric Overview blade in the Azure management portal
+  - in the above example it would be <https://marksf.northeurope.cloudapp.azure.com:19080/Explorer> - amend appropriately based on the name given to your cluster
+- Accept any warnings (browser is not aware of the self signed certificates), and continue to the webpage.
 - Specify the certificate that was downloaded / installed.
 
 ![](Images/SFExplorerCert.png)
@@ -98,16 +95,27 @@ We shall use a Visual Studio project to create the deployment files.
 
 - From the Visual Studio menu, create a new Project
 - Select Service Fabric Application
+  - Specify name of project and location
 
 ![](Images/SFVS1.png)
+
+- Install Service Fabric SDK if not installed
+
+![](Images/SFVS2.png)
+
+![](Images/SFSDK.png)
 
 - Select Container as the Service Template
 - Specify image name e.g. markharrison/aznewswindows:grey
 - Specify service name e.g. aznews
 
-![](Images/SFVS2.png)
+![](Images/SFVS3.png)
 
 This will generate ApplicationManifest.xml and ServiceManifest.xml
+
+![](Images/SFVS4.png)
+
+![](Images/SFVS5.png)
 
 ApplicationManifest.xml - The application manifest declaratively describes the application type and version. It specifies service composition metadata such as stable names, partitioning scheme, instance count/replication factor, security/isolation policy, placement constraints, configuration overrides, and constituent service types.
 
@@ -228,12 +236,10 @@ The new Blue version of the web app is now live.
 
 ## Tidy up
 
-If a Party Cluster was used - then it will be deleted automatically after one hour.
-
-If a SF cluster in Azure was used - either:
+To tidy up - either:
 
 - delete the Resource Group to wipe the cluster permanently
 - stop the VM instances in the VM Scale Set to prevent compute costs - they can be restarted again, when required.
 
 ---
-<http://github.markharrison.io>
+<https://github.com/markharrison>
